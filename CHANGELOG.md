@@ -4,6 +4,28 @@ All notable changes to IndoxHub Python Client will be documented in this file.
 
 
 
+## [0.2.3] - 2026-08-27
+
+### Fixed
+
+- **Every write call was failing against the live API.** Request URLs were
+  built without a trailing slash (`/api/v1/chat/completions`), and the
+  server's slashless catch-all is CSRF-protected, so each POST got a
+  `403` HTML page instead of a redirect. All paths now end in `/`, with the
+  query string kept after the slash (`videos/jobs/?limit=20`). Covers every
+  method, including `resemble.*`, plus the hardcoded `/auth/api-key/` and
+  `/auth/token/` URLs.
+
+### Changed
+
+- `pytest.ini` `testpaths` pointed at `indoxhub/tests` and
+  `indoxhub_server/tests`, neither of which exists — a bare `pytest` run
+  collected nothing. Now `tests`.
+- Removed `requirements.txt`: a UTF-16 `pip freeze` of an mkdocs docs
+  environment, referenced by nothing and unrelated to the package. Runtime
+  deps live in `pyproject.toml`; `pytest` is now declared under the `dev`
+  extra.
+
 ## [0.2.2] - 2026-05-02
 
 ### Notes

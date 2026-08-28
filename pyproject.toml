@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "indoxhub"
-version = "0.2.2"
+version = "0.2.3"
 authors = [
     {name = "indoxHub Team", email = "support@indoxhub.com"},
 ]
@@ -27,6 +27,9 @@ dependencies = [
     "requests>=2.25.0",
     "python-dotenv>=1.0.0",
 ]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
 
 [project.urls]
 Homepage = "https://github.com/osllmai/indoxHub_client"
