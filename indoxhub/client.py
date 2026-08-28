@@ -129,6 +129,15 @@ from .constants import (
 logger = logging.getLogger(__name__)
 
 
+
+def _with_trailing_slash(endpoint: str) -> str:
+    """Every server path ends in `/`; a slashless POST is rejected before it routes."""
+    path, sep, query = endpoint.partition("?")
+    if not path.endswith("/"):
+        path += "/"
+    return f"{path}{sep}{query}"
+
+
 class Client:
     """
     Client for interacting with the IndoxHub API.
@@ -194,7 +203,7 @@ class Client:
             # First try with the dedicated API key endpoint
             logger.debug("Authenticating with dedicated API key endpoint")
             response = self.session.post(
-                f"{self.base_url}/api/v1/auth/api-key",
+                f"{self.base_url}/api/v1/auth/api-key/",
                 headers={"X-API-Key": self.api_key},
                 timeout=self.timeout,
             )
@@ -203,7 +212,7 @@ class Client:
                 # If dedicated endpoint fails, try using the API key as a username
                 logger.debug("API key endpoint failed, trying with API key as username")
                 response = self.session.post(
-                    f"{self.base_url}/api/v1/auth/token",
+                    f"{self.base_url}/api/v1/auth/token/",
                     data={
                         "username": self.api_key,
                         "password": self.api_key,  # Try using API key as both username and password
@@ -215,7 +224,7 @@ class Client:
                     # Try one more method - the token endpoint with different format
                     logger.debug("Trying with API key as token parameter")
                     response = self.session.post(
-                        f"{self.base_url}/api/v1/auth/token",
+                        f"{self.base_url}/api/v1/auth/token/",
                         data={
                             "username": "pip_client",
                             "password": self.api_key,
@@ -315,7 +324,7 @@ class Client:
         if endpoint.startswith("/"):
             endpoint = endpoint[1:]
 
-        url = f"{self.base_url}/{endpoint}"
+        url = f"{self.base_url}/{_with_trailing_slash(endpoint)}"
 
         # Set headers based on whether we're uploading files
         if files:
